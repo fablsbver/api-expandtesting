@@ -1,37 +1,28 @@
 package com.github.fblsbver.tests;
 
-import com.github.fblsbver.config.App;
 import com.github.fblsbver.pojos.LoginUserRequest;
 import com.github.fblsbver.pojos.OtherResponses;
 import com.github.fblsbver.pojos.RegUserRequest;
 import org.junit.jupiter.api.Test;
 
-import static com.github.fblsbver.specs.Specifications.*;
-import static io.restassured.RestAssured.given;
+import static com.github.fblsbver.steps.UserSteps.loginUser;
+import static com.github.fblsbver.steps.UserSteps.registerUserResponse;
+import static com.github.fblsbver.test_data.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class NegativeTest {
-
-    String name = App.config.userName();
-    String incorrectName = "rty";
-    String email = App.config.userEmail();
-    String incorrectEmail = "tttttt";
-    String password = App.config.userPassword();
-    String incorrectPassword = "ttryyuwqo";
+    public static final String INCORRECT_NAME = "rty";
+    public static final String INCORRECT_EMAIL = "tttttt";
+    public static final String INCORRECT_PASSWORD = "ttryyuwqo";
 
     @Test
     public void inputInvalidName() {
+        RegUserRequest userRequest = new RegUserRequest(INCORRECT_NAME, USER_EMAIL, USER_PASSWORD);
 
-        RegUserRequest userRequest = new RegUserRequest(incorrectName, email, password);
-
-        String message = given()
-                .spec(request)
-                .body(userRequest)
-                .when()
-                .post(App.config.userReg())
-                .then().log().all()
-                .spec(responseBadRequest)
+        String message = registerUserResponse(userRequest)
+                .then()
+                .statusCode(400)
                 .extract().body().as(OtherResponses.class)
                 .getMessage();
 
@@ -44,15 +35,11 @@ public class NegativeTest {
     @Test
     public void inputInvalidEmail() {
 
-        RegUserRequest userRequest = new RegUserRequest(name, incorrectEmail, password);
+        RegUserRequest userRequest = new RegUserRequest(USER_NAME, INCORRECT_EMAIL, USER_PASSWORD);
 
-        String message = given()
-                .spec(request)
-                .body(userRequest)
-                .when()
-                .post(App.config.userReg())
-                .then().log().all()
-                .spec(responseBadRequest)
+        String message = registerUserResponse(userRequest)
+                .then()
+                .statusCode(400)
                 .extract().body().as(OtherResponses.class)
                 .getMessage();
 
@@ -64,15 +51,11 @@ public class NegativeTest {
 
     @Test
     public void inputIncorrectEmailOrPassword() {
-        LoginUserRequest userRequest = new LoginUserRequest(email, incorrectPassword);
+        LoginUserRequest userRequest = new LoginUserRequest(USER_EMAIL, INCORRECT_PASSWORD);
 
-        String message = given()
-                .spec(request)
-                .body(userRequest)
-                .when()
-                .post(App.config.userLogin())
-                .then().log().all()
-                .spec(responseUnauthorized)
+        String message = loginUser(userRequest)
+                .then()
+                .statusCode(401)
                 .extract().body().as(OtherResponses.class)
                 .getMessage();
 
