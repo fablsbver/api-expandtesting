@@ -19,14 +19,6 @@ public class UserSteps {
                 .extract().response();
     }
 
-    public static RegUserRequest getUserRegData(String name, String email, String password) {
-        return RegUserRequest.builder()
-                .name(name)
-                .email(email)
-                .password(password)
-                .build();
-    }
-
     public static Response loginUser(LoginUserRequest requestBody) {
         return given()
                 .spec(REQUEST_SPEC)
@@ -36,25 +28,16 @@ public class UserSteps {
                 .extract().response();
 
     }
-
-    public static LoginUserRequest enterUserLoginData(String email, String password) {
-        return LoginUserRequest.builder()
-                .email(email)
-                .password(password)
-                .build();
-    }
-
     public static String getToken(LoginUserRequest requestBody) {
-        Response response = given()
+        return given()
                 .spec(REQUEST_SPEC)
                 .body(requestBody)
                 .when()
                 .post(USER_LOGIN)
-                .then().extract().response();
-
-       return response.then()
+                .then()
                 .extract()
                 .body().jsonPath().getObject("data", LoginUserResponse.class).getToken();
+
     }
 
     public static Response getInfoFromUserProfileResponse(){

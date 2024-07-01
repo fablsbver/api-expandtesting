@@ -16,12 +16,10 @@ public class PositiveTest {
     @Test
     @Order(1)
     public void successRegTest() {
-        RegUserRequest user = getUserRegData(USER_NAME, USER_EMAIL, USER_PASSWORD);
-        RegUserResponse response = registerUserResponse(user)
+        RegUserResponse response = registerUserResponse(new RegUserRequest(USER_NAME, USER_EMAIL, USER_PASSWORD))
                 .then()
                 .statusCode(201)
                 .extract().body().jsonPath().getObject("data", RegUserResponse.class);
-
 
         assertThat(response)
                 .extracting(RegUserResponse::getName)
@@ -32,8 +30,7 @@ public class PositiveTest {
     @Test
     @Order(2)
     public void successLogin() {
-        LoginUserRequest login = enterUserLoginData(USER_EMAIL, USER_PASSWORD);
-        LoginUserResponse response = loginUser(login)
+        LoginUserResponse response = loginUser(new LoginUserRequest(USER_EMAIL, USER_PASSWORD))
                 .then()
                 .statusCode(200)
                 .extract().body().jsonPath().getObject("data", LoginUserResponse.class);
@@ -42,6 +39,7 @@ public class PositiveTest {
                 .isNotNull()
                 .extracting(LoginUserResponse::getEmail)
                 .isEqualTo(USER_EMAIL);
+
     }
 
     @Test
@@ -55,6 +53,7 @@ public class PositiveTest {
 
         assertThat(name)
                 .isNotNull();
+
     }
 
     @Test
@@ -68,6 +67,7 @@ public class PositiveTest {
 
         assertThat(message)
                 .isEqualTo("User has been successfully logged out");
+
     }
 
     @Test
